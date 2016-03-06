@@ -1,27 +1,62 @@
-# Welcome to Introduction to Angular.js!
+# Intro to AngularJS
 
-## Overview
+Look into electron (similar to nw.js); http://electron.atom.io/
 
-This repository contains a **start** and **completed** folder. The **start** folder is the starting place for the class, while the **completed** folder is a completed application with unit tests.
+At the end of the day, when using DOM elements using JS, JS is really just glue code between C++ objects.
 
-## Getting Started
+JS is single threaded.  At any given time, only one task can be done only.
 
-To get started, download and extract the zip file or clone the repository to a local folder.
+What is node.js? Its JavaScript on the server.
 
-Only [Node.js](https://nodejs.org) needs to be installed to run this code. Please use the LTS version of Node.js. No NPM packages need to be installed.
+How is related to Java? it gets rid of it.
 
-To run either the **start** or **completed** version of the application, change to the "start" or "completed" folder, and run the following command from the terminal.
+For an elementary look into a basic express-like clone, see the http-helper.js file.
 
-```bash
-$ node server
+Over time 2 module systems came about:
+1. CommonJS - synchronise file system module based system
+2. AMD - downloads what you need when you need it, not as popular because nowadays bandwidth is not the issue, latency is.
+
+## Day 1
+### Principles & Concepts
+- browser is blocking when loading js files, so always put them at bottom of page
+- css files is also blocking, but you want page to be styled
+
+- when angularjs is loaded at the documentReady event, it looks for the directive marker ng-app into which it will apply its js code to.  Angular will only exist on that ng-app element and all its children.  You cannot have multiple ng-app directive markers.  But you can have multiple apps using the angularjs bootstrap method.  Similar to ng-app, you have ng-controller directive marker.
+
+- javascript has no concept of namespacing
+- in javascript, functions are objects
+
+- immediately invoked function expression (IIFE) is the:
+```javascript
+(function(angular {
+	// angular code here
+})(angular);
+```
+allows you to define things such that they do not pollute the global scope.
+
+- TODO: see brendan eich podcast on javascript creation
+
+- "use strict"; // best practice, applies certain features/conventions from ECMASCRIPT5
+
+- angular adds the ng-scope which means its a new variable scope
+- angular adds the ng-binding class which means there are template elements that are bound that need to be updated.  Must be used carefully because everytime input taken then update model then digest loop function is done twice on the whole page.  This digest loop does the synchronization, since JS is single threaded, this can cause sluggishness as app grows bigger. NOTE: THIS has changed since Angular 2.0!
+
+### Directives
+
+- ng-repeat, takes a dom element and repeats it over and over
+- $ sign prefix just means the thing you are working with is built-in into angular, some examples: 
+`$index, $first, $last, $middle, $even, $odd`
+- you can use built-in filters using: filter and orderBy: `<li ng-repeat="color in colors | filter:colorFilter | orderBy:'toString()':colorSort">` 
+
+- ng-click, adds a click handler then runs the digest loop
+- to manually trigger the digest loop, `$scope.$digest();` - never do this, not good convention unless you do it like (runs in the context of a try/catch block):
+```$scope.$apply(function() {
+	$scope.$digest();
+})
 ```
 
-To access the web application, open a web browser and navigate to [http://localhost:8080](http://localhost:8080).
+## Day 2
 
-To run the unit tests, open a web browser and navigate to [http://localhost:8080/tests/](http://localhost:8080/tests/).
-
-## Configuration
-
-The **config.json** file can be modified to change the web server port. This is useful if port 8080 is already being used by another application on your system.
-
-Also, **html5Mode** can be set to true when using HTML5 mode for client side routing in Angular.js. When set to true, "index.html" will **always** be served up, regardless of the url, except for CSS, JavaScript, font, template, and test files.
+## Questions
+- opinion on semicolon
+- ng-model
