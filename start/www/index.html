@@ -15,7 +15,46 @@
 
 		<main ng-app="WidgetApp" class="container">
 			<div ng-controller="HomeCtrl">
-				{{message}}
+			Color Filter <input type="text" ng-model="colorFilter" /><br/>
+			Sort Descending <input type="checkbox" ng-model="colorSort" />
+				<ul>
+					<li ng-repeat="color in colors | filter:colorFilter | orderBy:'toString()':colorSort">{{$index}} {{$odd}} {{color}}</li>
+				</ul>
+				New Color: <input type="text" ng-model="newColor"/> 
+				<button onclick="addColor()">+ Color</button>
+				<br/><br/>
+
+
+				<input type="text" ng-model="continentFilter" />
+				<ul>
+					<li ng-repeat="country in countries | filter:{continent:continentFilter} | orderBy:'capital'">
+						{{country.capital}}, {{country.name}} - {{country.continent}}
+					</li>
+				</ul>
+
+
+
+
+				<table class="table table-striped table-bordered">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Description</th>
+							<th>Color</th>
+							<th>Size</th>
+							<th>Qty</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="widget in widgets | orderBy:'name'">
+							<td>{{widget.name}}</td>
+							<td>{{widget.description}}</td>
+							<td>{{widget.color}}</td>
+							<td>{{widget.size}}</td>
+							<td>{{widget.quantity}}</td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 		</main>
 
