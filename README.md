@@ -4,7 +4,7 @@ Look into electron (similar to nw.js); http://electron.atom.io/
 
 At the end of the day, when using DOM elements using JS, JS is really just glue code between C++ objects.
 
-JS is single threaded.  At any given time, only one task can be done only.
+JS is single threaded  (but the browser is multi).  At any given time, only one task can be done only.
 
 JS hoisting, function declarations (not impl) get hoisted to the top on file load.  In JS2015, `let` is block scoped but `var` is function scoped.
 
@@ -19,6 +19,14 @@ For an elementary look into a basic express-like clone, see the http-helper.js f
 Over time 2 module systems came about:
 1. CommonJS - synchronize file system module based system
 2. AMD - downloads what you need when you need it, not as popular because nowadays bandwidth is not the issue, latency is.
+
+AngularJS does not follow MVC, its more like
+Model ($scope) -injected-> Controller
+^
+|
+View (template, directives, filters)
+
+Its basically MV-whatever / MVVM.  Controllers are used to configure scope objects mainly.
 
 ## Day 1
 ### Principles & Concepts
@@ -109,6 +117,159 @@ Use gulp/grunt to cache your templates into templateCache
 
 ## Day 2
 
+### Form validation
+```javascript
+<input type="text" name="widgetName" ng-model="widget.name" required />
+<span ng-show="widgetForm.widgetName.$touched && widgetForm.widgetName.$invalid">Name is required</span>
+```
+
+```javascript
+<label>
+	Where are you from?
+	<select ng-model="contact.location" name="contactLocation"
+	ng-options="country.code as country.name group by country.continent for country in countries | orderBy:'continent'">
+		<option value="">Select one...</option>
+	</select>
+</label>
+```
+
+### Promises
+Alleviates the pyramid of doom:
+```javascript
+$.ajax({
+	success: function() {
+		$.ajax({
+			success: function() {
+				$.ajax({
+					function() {
+						// ...
+					}
+				});
+			}
+		});
+	}
+});
+```
+
+Javascript promise:
+```javascript
+var p = new Promise(function(fulfill, reject) {
+})
+```
+
+Angular promise:
+```javascript
+$http.get("/api/widgets").then(function(results) {
+	// handle success
+}).catch(function(results){
+	// handle failure
+});
+```
+
+Look into: HTTP interceptors.
+
+### Services
+To create a service, use the `factory` method.  
+```Javascript
+angular.module("WidgetApp", [])
+	.factory("widgetsService", function($http) {
+		return {
+			getAll: function(){
+				return $http.get("/api/widgets");
+			},
+			get: function(id){
+				return $http.get("/api/widgets/" + encodeURIComponent(id)); // encodeURIComponent escapes it so its valid URI
+			},
+			new: function(widget) {
+				return $http.post("/api/widgets", widget); // automatically serialized to JSON
+			},
+			update: function(id, widget) {
+				return $http.update("/api/widgets/"+encodeURIComponent(id), widget);
+			}
+		};
+	});
+```
+
+Or a more decoupled way, in its own service file:
+```javascript
+(function(angular){
+  "use strict";
+
+  factory.$inject["$http"];
+
+  function service($http) {
+    return {
+      getAll: function() {
+        return $http.get("/api/widgets");
+      },
+      get: function(id) {
+        return $http.get("/api/widgets/"+encodeURIComponent(id));
+      },
+      delete: function(id) {
+        return $http.delete("/api/widgets/"+encodeURIComponent(id));
+      },
+      new: function(widget) {
+        return $http.post("/api/widgets", widget); // automatically serialized to JSON
+      },
+      update: function(id, widget) {
+        return $http.update("/api/widgets/"+encodeURIComponent(id), widget);
+      }
+    };
+  }
+
+  angular.module("WidgetApp.Services")
+    .factory("widgets", service);
+})(angular);
+```
+
+### Structure
+In Angular, there is no namespacing, the names of modules does not mean anything for it.  If you have 2 modules named the same thing, the last one will be used.
+
+### Routing
+Create a routes.js file;
+```javascript
+(function(angular){
+  "use strict";
+
+  angular.module("WidgetApp.Services")
+    .config(function($stateProvider, $urlRouterProvider, $locationProvider){
+      $urlRouterProvider.otherwise("/");
+      $locationProvider.html5Mode(false);
+
+      $stateProvider
+        .state("home", {
+          url: "/",
+          templateUrl: "/tpls/home.tpl",
+          controller: "home"
+        });
+    });
+})(angular)
+```
+
+### Testing
+
+A sample unit test in Jasmine:
+```javascript
+it("view widget", function() {
+
+	mockScope.viewWidget(1);
+	expect(stateSvc.go).toHaveBeenCalledWith("view", { widgetId: 1 });
+
+});
+```
+
+Use istanbul for js code coverage.
+
+Cyclomatic complexity is a software metric (measurement), used to indicate the complexity of a program. It is a quantitative measure of the number of linearly independent paths through a program's source code.
+
+Cyclomatic complexity is computed using the control flow graph of the program: the nodes of the graph correspond to indivisible groups of commands of a program, and a directed edge connects two nodes if the second command might be executed immediately after the first command. Cyclomatic complexity may also be applied to individual functions, modules, methods or classes within a program.
+
+One testing strategy, called basis path testing by McCabe who first proposed it, is to test each linearly independent path through the program; in this case, the number of test cases will equal the cyclomatic complexity of the program.[1]
+https://en.wikipedia.org/wiki/Cyclomatic_complexity
+
 ## Questions
-- ng-model
-- do you have to use index.html
+Email: eric@training4developers.com
+https://www.dropbox.com/sh/0lakcm80swz2ae7/AADcLdepPaoFk6n3-VyyhK0wa?dl=0
+
+Use Webpack to minify and combine all as one single file.
+Jasmine is the unit test fw for angular.

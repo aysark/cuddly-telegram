@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 
 <html>
-
 	<head>
 		<title>Angular.js Demo App</title>
 		<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
@@ -9,16 +8,20 @@
 		<link href="css/bootstrap-theme.min.css" rel="stylesheet">
 		<link href="css/site.css" rel="stylesheet">
 		<base href="/">
+		<style>
+			input.ng-touched.ng-invalid {
+				border: 2px solid red;
+			}
+		</style>
 	</head>
-
 	<body>
-
 		<main ng-app="WidgetApp" class="container">
-			<div ng-controller="HomeCtrl">
-				Show Me <input ng-model="missouri" type="checkbox" />
-				<div ng-show="missouri">
-					Missouri is the show me state
-				</div>
+			<div ng-controller="DemoCtrl">
+				<ul>
+					<li ng-repeat="widget in widgets">
+						{{widget.name}}
+					</li>
+				</ul>
 			</div>
 		</main>
 
@@ -29,5 +32,4 @@
 		<script src="js/site.js"></script>
 
 	</body>
-
 </html>
