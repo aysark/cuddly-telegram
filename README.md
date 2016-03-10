@@ -1,4 +1,4 @@
-# Intro to AngularJS
+# Intro to AngularJS 1.5
 
 Look into electron (similar to nw.js); http://electron.atom.io/
 
